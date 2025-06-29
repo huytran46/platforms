@@ -49,3 +49,22 @@ export const getAtmByDistrict = async (): Promise<AtmByDistrict[] | null> => {
   let { data: atmData, error } = await supabase.rpc("get_atm_by_district");
   return atmData;
 };
+
+export const getAtmsWithCoordinates = async () => {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const { data, error } = await supabase.rpc("get_atm_coordinates");
+  return { data, error } as {
+    data: Array<
+      Pick<
+        AtmData,
+        | "id"
+        | "atm"
+        | "district_extracted"
+        | "address_extracted"
+        | "coordinates"
+      > & { latitude: number; longitude: number }
+    >;
+    error: any;
+  };
+};
