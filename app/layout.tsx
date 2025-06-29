@@ -8,8 +8,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'Platforms Starter Kit',
-  description: 'Next.js template for building a multi-tenant SaaS.'
+  title: "IT2030.CH190",
+  description: "ACB's ATM in Hồ Chí Minh city",
 };
 
 export default function RootLayout({
