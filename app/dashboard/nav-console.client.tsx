@@ -1,15 +1,15 @@
 "use client";
 
 import { NavDocuments } from "@/components/nav-documents";
-import { IconDashboard } from "@tabler/icons-react";
+import { IconDatabase } from "@tabler/icons-react";
 
 const NavConsoleClient = () => (
   <NavDocuments
     items={[
       {
-        name: "Console",
+        name: "CSDL",
         url: "/dashboard",
-        icon: IconDashboard,
+        icon: IconDatabase,
       },
     ]}
   />
