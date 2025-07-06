@@ -8,7 +8,7 @@ const NavConsoleClient = () => (
     items={[
       {
         name: "CSDL",
-        url: "/dashboard",
+        url: "/dashboard/database",
         icon: IconDatabase,
       },
     ]}

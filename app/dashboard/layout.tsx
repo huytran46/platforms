@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { IconCode } from "@tabler/icons-react";
 import { batchGeocodeATMs } from "./batch-geocode-atms";
 import NavConsoleClient from "./nav-console.client";
@@ -43,16 +42,7 @@ export default async function Layout({
         )}
       </AppSidebar>
 
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              {children}
-            </div>
-          </div>
-        </div>
-      </SidebarInset>
+      {children}
     </SidebarProvider>
   );
 }
