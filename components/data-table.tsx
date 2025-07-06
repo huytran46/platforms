@@ -51,6 +51,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+
+const editCoordinatesAtom = atom<string | null>(null);
 
 export const schema = z.object({
   id: z.number(),
@@ -82,30 +92,44 @@ function DragHandle({ id }: { id: string }) {
   );
 }
 
+const EditCoordinatesItem = ({ id }: { id: string }) => {
+  const setEditCoordinatesAtom = useSetAtom(editCoordinatesAtom);
+  return (
+    <DropdownMenuItem
+      onClick={(e) => {
+        setEditCoordinatesAtom(id);
+        e.stopPropagation();
+      }}
+    >
+      Edit coordinates
+    </DropdownMenuItem>
+  );
+};
+
 const columns: ColumnDef<AtmData>[] = [
   {
     id: "actions",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <EditCoordinatesItem id={row.original.id} />
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
   {
     id: "id",
@@ -166,7 +190,7 @@ function DraggableRow({ row }: { row: Row<AtmData> }) {
       //   transform: CSS.Transform.toString(transform),
       //   transition: transition,
       // }}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+      className="relative data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
@@ -176,6 +200,22 @@ function DraggableRow({ row }: { row: Row<AtmData> }) {
     </TableRow>
   );
 }
+
+const EditCoordinatesDialog = () => {
+  const [editCoordinates, setEditCoordinates] = useAtom(editCoordinatesAtom);
+  return (
+    <Dialog
+      open={!!editCoordinates}
+      onOpenChange={(nextState) => !nextState && setEditCoordinates(null)}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit coordinates</DialogTitle>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export function DataTable({
   data,

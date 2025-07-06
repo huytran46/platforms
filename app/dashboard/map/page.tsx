@@ -17,14 +17,26 @@ export default async function MapPage() {
           {/* Map Visualizations */}
           <div className="space-y-4">
             <h2 className="text-lg font-medium">Map</h2>
-            <Suspense fallback={<Skeleton className="min-h-[600px] w-full" />}>
+            <Suspense
+              fallback={
+                <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
+                  <span>Loading map...</span>
+                </Skeleton>
+              }
+            >
               <AtmMapServer />
             </Suspense>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-lg font-medium">Heatmap</h2>
-            <Suspense fallback={<Skeleton className="min-h-[600px] w-full" />}>
+            <Suspense
+              fallback={
+                <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
+                  <span>Loading heatmap...</span>
+                </Skeleton>
+              }
+            >
               <AtmHeatmapServer />
             </Suspense>
           </div>

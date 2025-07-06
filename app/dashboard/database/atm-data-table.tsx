@@ -6,6 +6,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const supabase = createClient();
 
@@ -74,7 +75,7 @@ const AtmDataTable = () => {
     pageSize: 10,
   });
 
-  const { data, fetchNextPage, fetchPreviousPage, isFetchingNextPage } =
+  const { data, fetchNextPage, fetchPreviousPage, isFetching, isLoading } =
     useAtmData(pagination.pageSize);
 
   const currentPageIndex = pagination.pageIndex;
@@ -85,13 +86,17 @@ const AtmDataTable = () => {
 
   const totalPages = data?.pages[0]?.totalPages || 0;
 
+  if (isLoading) {
+    return (
+      <div className="p-4 flex flex-col gap-4">
+        <Skeleton className="h-[40px] w-full rounded-lg" />
+        <Skeleton className="h-[400px] w-full rounded-lg" />
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "relative flex flex-col",
-        isFetchingNextPage && "opacity-50"
-      )}
-    >
+    <div className={cn("relative flex flex-col", isFetching && "opacity-50")}>
       <DataTable
         totalPages={totalPages}
         currentPageIndex={currentPageIndex}
