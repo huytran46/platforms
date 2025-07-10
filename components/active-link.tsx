@@ -18,7 +18,11 @@ const ActiveLink = ({
   return (
     <Link
       ref={ref}
-      className={cn("relative flex items-center gap-2", className)}
+      className={cn(
+        "relative flex items-center gap-2",
+        className,
+        isActive && "hover:bg-transparent hover:cursor-default"
+      )}
       href={href}
     >
       {children}

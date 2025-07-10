@@ -1,9 +1,7 @@
-import { DataTable } from "@/components/data-table";
 import { SiteHeader } from "@/components/site-header";
 import { SiteMain } from "@/components/site-main";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { AtmDataTable } from "./atm-data-table";
-
 
 const Page = () => {
   return (

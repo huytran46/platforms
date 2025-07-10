@@ -1,69 +1,71 @@
-'use server';
+"use server";
 
-import { redis } from '@/lib/redis';
-import { isValidIcon } from '@/lib/subdomains';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { rootDomain, protocol } from '@/lib/utils';
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-export async function createSubdomainAction(
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+
+export async function login(
   prevState: any,
   formData: FormData
-) {
-  const subdomain = formData.get('subdomain') as string;
-  const icon = formData.get('icon') as string;
+): Promise<{ error?: string }> {
+  const supabase = createClient(await cookies());
 
-  if (!subdomain || !icon) {
-    return { success: false, error: 'Subdomain and icon are required' };
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
+
+  const { error } = await supabase.auth.signInWithPassword(data);
+
+  if (error) {
+    console.error(error);
+    // redirect("/error");
+    return { error: error.message };
   }
 
-  if (!isValidIcon(icon)) {
-    return {
-      subdomain,
-      icon,
-      success: false,
-      error: 'Please enter a valid emoji (maximum 10 characters)'
-    };
-  }
-
-  const sanitizedSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
-
-  if (sanitizedSubdomain !== subdomain) {
-    return {
-      subdomain,
-      icon,
-      success: false,
-      error:
-        'Subdomain can only have lowercase letters, numbers, and hyphens. Please try again.'
-    };
-  }
-
-  const subdomainAlreadyExists = await redis.get(
-    `subdomain:${sanitizedSubdomain}`
-  );
-  if (subdomainAlreadyExists) {
-    return {
-      subdomain,
-      icon,
-      success: false,
-      error: 'This subdomain is already taken'
-    };
-  }
-
-  await redis.set(`subdomain:${sanitizedSubdomain}`, {
-    emoji: icon,
-    createdAt: Date.now()
-  });
-
-  redirect(`${protocol}://${sanitizedSubdomain}.${rootDomain}`);
+  revalidatePath("/", "layout");
+  redirect("/");
 }
 
-export async function deleteSubdomainAction(
+export async function signup(
   prevState: any,
   formData: FormData
-) {
-  const subdomain = formData.get('subdomain');
-  await redis.del(`subdomain:${subdomain}`);
-  revalidatePath('/admin');
-  return { success: 'Domain deleted successfully' };
+): Promise<{ error?: string }> {
+  const supabase = createClient(await cookies());
+  const confirmPassword = formData.get("confirm-password") as string;
+  const password = formData.get("password") as string;
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match" };
+  }
+
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+  const data = {
+    email: formData.get("email") as string,
+    password: password,
+  };
+
+  const { error } = await supabase.auth.signUp(data);
+
+  if (error) {
+    console.error(error);
+    // redirect("/error");
+    return { error: error.message };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+
+export async function logout() {
+  const supabase = createClient(await cookies());
+  // Log out only the current session
+  await supabase.auth.signOut({ scope: "local" });
+  revalidatePath("/", "layout");
+  redirect("/");
 }

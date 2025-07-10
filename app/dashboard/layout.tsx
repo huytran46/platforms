@@ -1,5 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { authGuard } from "@/app/auth-guard";
+
 import NavConsoleClient from "./nav-console.client";
 import NavMainClient from "./nav-main.client";
 
@@ -10,6 +12,8 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  await authGuard();
+
   return (
     <SidebarProvider
       style={
