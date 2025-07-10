@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+import { ActiveLink } from "./active-link";
 
 export function NavMain({
   items,
@@ -29,10 +29,10 @@ export function NavMain({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton tooltip={item.title} asChild>
-                <Link href={item.url}>
+                <ActiveLink href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                </Link>
+                </ActiveLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

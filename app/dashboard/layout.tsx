@@ -1,8 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { IconCode } from "@tabler/icons-react";
-import { batchGeocodeATMs } from "./batch-geocode-atms";
 import NavConsoleClient from "./nav-console.client";
 import NavMainClient from "./nav-main.client";
 
@@ -26,20 +23,20 @@ export default async function Layout({
         <NavMainClient />
         <NavConsoleClient />
 
-        {ENV === "development" && (
+        {/* {ENV === "development" && (
           <div className="flex p-4">
             <Button
               variant="outline"
-              onClick={async () => {
-                "use server";
-                await batchGeocodeATMs();
-              }}
+              // onClick={async () => {
+              //   "use server";
+              //   await batchGeocodeATMs();
+              // }}
             >
               <IconCode className="mr-2 h-4 w-4" />
               Start geocoding data
             </Button>
           </div>
-        )}
+        )} */}
       </AppSidebar>
 
       {children}
