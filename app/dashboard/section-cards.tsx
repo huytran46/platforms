@@ -44,41 +44,49 @@ export async function SectionCards() {
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total ATMs</CardDescription>
+          <CardDescription>Tổng số ATM</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {formatNumber(atmAnalytics.overview.total_atms)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp />
-              {atmAnalytics.overview.atms_with_coordinates} mapped
+              {atmAnalytics.overview.atms_with_coordinates} đã định vị
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {coordinatesPercentage.toFixed(1)}% have coordinates <IconTrendingUp className="size-4" />
+            {coordinatesPercentage.toFixed(1)}% có tọa độ{" "}
+            <IconTrendingUp className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Geographic coverage across {atmAnalytics.geographic_coverage.unique_districts} districts
+            Phủ sóng địa lý trên{" "}
+            {atmAnalytics.geographic_coverage.unique_districts} quận/huyện
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Data Quality</CardDescription>
+          <CardDescription>Chất lượng dữ liệu</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {atmAnalytics.data_quality.completeness_score}%
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               {atmAnalytics.data_quality.completeness_score >= 80 ? (
-                <><IconTrendingUp /> Excellent</>
+                <>
+                  <IconTrendingUp /> Xuất sắc
+                </>
               ) : atmAnalytics.data_quality.completeness_score >= 60 ? (
-                <><IconTrendingUp /> Good</>
+                <>
+                  <IconTrendingUp /> Tốt
+                </>
               ) : (
-                <><IconTrendingDown /> Needs attention</>
+                <>
+                  <IconTrendingDown /> Cần cải thiện
+                </>
               )}
             </Badge>
           </CardAction>
@@ -86,36 +94,47 @@ export async function SectionCards() {
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
             {atmAnalytics.data_quality.completeness_score >= 80 ? (
-              <>High data completeness <IconTrendingUp className="size-4" /></>
+              <>
+                Dữ liệu hoàn thiện cao <IconTrendingUp className="size-4" />
+              </>
             ) : (
-              <>Data quality improvement needed <IconTrendingDown className="size-4" /></>
+              <>
+                Cần cải thiện chất lượng dữ liệu{" "}
+                <IconTrendingDown className="size-4" />
+              </>
             )}
           </div>
           <div className="text-muted-foreground">
-            Missing: {atmAnalytics.data_quality.missing_coordinates} coords, {atmAnalytics.data_quality.missing_images} images
+            Thiếu: {atmAnalytics.data_quality.missing_coordinates} tọa độ,{" "}
+            {atmAnalytics.data_quality.missing_images} hình ảnh
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Recent Activity</CardDescription>
+          <CardDescription>Hoạt động gần đây</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {formatNumber(atmAnalytics.recent_activity.added_last_week)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               {atmAnalytics.recent_activity.added_last_24h > 0 ? (
-                <><IconTrendingUp /> +{atmAnalytics.recent_activity.added_last_24h} today</>
+                <>
+                  <IconTrendingUp /> +
+                  {atmAnalytics.recent_activity.added_last_24h} hôm nay
+                </>
               ) : (
-                <><IconTrendingDown /> No new today</>
+                <>
+                  <IconTrendingDown /> Không có mới hôm nay
+                </>
               )}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {atmAnalytics.recent_activity.updated_last_24h} updated today{" "}
+            {atmAnalytics.recent_activity.updated_last_24h} cập nhật hôm nay{" "}
             {atmAnalytics.recent_activity.updated_last_24h > 0 ? (
               <IconTrendingUp className="size-4" />
             ) : (
@@ -123,31 +142,30 @@ export async function SectionCards() {
             )}
           </div>
           <div className="text-muted-foreground">
-            New ATMs added in the last week
+            ATM mới được thêm trong tuần qua
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Coverage Rate</CardDescription>
+          <CardDescription>Tỷ lệ phủ sóng</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {atmAnalytics.geographic_coverage.unique_districts}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp />
-              {coordinatesPercentage.toFixed(0)}% mapped
+              {coordinatesPercentage.toFixed(0)}% đã bản đồ
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Districts covered nationwide <IconTrendingUp className="size-4" />
+            Quận/huyện được phủ sóng toàn quốc{" "}
+            <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Geographic distribution analysis
-          </div>
+          <div className="text-muted-foreground">Phân tích phân bố địa lý</div>
         </CardFooter>
       </Card>
     </div>
