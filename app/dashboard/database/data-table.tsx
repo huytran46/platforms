@@ -215,13 +215,14 @@ export function DataTable({
   return (
     <>
       {/* PAGINATION CONTROLLER */}
-      <div className="sticky top-0 flex w-full items-center justify-end gap-8 bg-white px-6 py-2 z-10">
+      <div className="sticky top-0 flex w-full items-center justify-end gap-8 bg-background text-background-foreground px-6 py-2 z-10">
         {stickyHeaderContent}
 
         <div className="hidden items-center gap-2 lg:flex">
           <Label htmlFor="rows-per-page" className="text-sm font-medium">
             Rows per page
           </Label>
+
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => {

@@ -1,4 +1,4 @@
-import { SectionCards } from "@/components/section-cards";
+import { SectionCards } from "@/app/dashboard/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SiteMain } from "@/components/site-main";
 import { SidebarInset } from "@/components/ui/sidebar";
