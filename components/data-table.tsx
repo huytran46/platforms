@@ -156,7 +156,7 @@ const columns: ColumnDef<AtmData>[] = [
       if (typeof coordinates === "object" && "type" in coordinates) {
         return (
           <div>
-            {coordinates.coordinates[0]}, {coordinates.coordinates[1]}
+            {coordinates.coordinates[1]}, {coordinates.coordinates[0]}
           </div>
         );
       }
@@ -229,6 +229,7 @@ export function DataTable({
   pageSize,
   onFirstPage,
   onLastPage,
+  stickyHeaderContent,
 }: {
   data: AtmData[];
   currentPageIndex: number;
@@ -236,6 +237,7 @@ export function DataTable({
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   pageSize: number;
+  stickyHeaderContent?: React.ReactNode;
   onPageSizeChange: (pageSize: number) => void;
   onPreviousPage: () => void;
   onNextPage: () => void;
@@ -276,6 +278,8 @@ export function DataTable({
     <>
       {/* PAGINATION CONTROLLER */}
       <div className="sticky top-0 flex w-full items-center justify-end gap-8 bg-white px-6 py-2 z-10">
+        {stickyHeaderContent}
+
         <div className="hidden items-center gap-2 lg:flex">
           <Label htmlFor="rows-per-page" className="text-sm font-medium">
             Rows per page

@@ -8,6 +8,6 @@ export const authGuard = async () => {
   const supabase = createClient(await cookies());
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
-    redirect("/");
+    redirect("/login");
   }
 };

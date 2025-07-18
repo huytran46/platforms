@@ -5,6 +5,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import { AtmDistrictChartServer } from "./atm-district-chart.server";
+import { AtmHeatmapServer } from "./map/atm-heatmap.server";
 
 export default async function DashboardPage() {
   return (
@@ -12,13 +13,35 @@ export default async function DashboardPage() {
       <SiteHeader>
         <h1 className="text-base font-medium">Phân tích dữ liệu</h1>
       </SiteHeader>
+
       <SiteMain>
         <SectionCards />
-        <div className="px-4 lg:px-6">
+        <div className="px-4 lg:px-6 flex-1">
           <Suspense fallback={<Skeleton className="min-h-[650px] w-full" />}>
             <AtmDistrictChartServer />
           </Suspense>
+          <Suspense
+            fallback={
+              <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
+                <span>Loading heatmap...</span>
+              </Skeleton>
+            }
+          >
+            <AtmHeatmapServer />
+          </Suspense>
         </div>
+
+        {/* <div className="px-4 lg:px-6 flex-1">
+          <Suspense
+            fallback={
+              <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
+                <span>Loading heatmap...</span>
+              </Skeleton>
+            }
+          >
+            <AtmHeatmapServer />
+          </Suspense>
+        </div> */}
       </SiteMain>
     </SidebarInset>
   );

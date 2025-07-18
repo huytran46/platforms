@@ -11,6 +11,9 @@ import {
 import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { MapPin, Milestone, MilestoneIcon } from "lucide-react";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -45,11 +48,7 @@ interface ATMMapProps {
   height?: string;
 }
 
-export function ATMMap({
-  atms,
-  showHeatmap = false,
-  height = "500px",
-}: ATMMapProps) {
+export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -124,55 +123,76 @@ export function ATMMap({
           {/* ATM Markers Layer */}
           <LayersControl.Overlay checked name="ATM Locations">
             <>
-              {validATMs.map((atm) => (
-                <Marker key={atm.id} position={[atm.latitude, atm.longitude]}>
-                  <Popup>
-                    <div className="p-3 min-w-[280px]">
-                      <h3 className="font-bold text-lg mb-2">{atm.atm}</h3>
-                      <p className="text-sm text-gray-600 mb-2">
-                        <strong>District:</strong>{" "}
-                        {atm.district_extracted.trim()}
-                      </p>
-                      <p className="text-xs text-gray-500 mb-3">
-                        {atm.address_extracted}
-                      </p>
+              {validATMs.map((atm) => {
+                const services = [
+                  atm.service_1,
+                  atm.service_2,
+                  atm.service_3,
+                  atm.service_4,
+                  atm.service_5,
+                ].filter((service) => service && service.trim() !== "");
 
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">
-                          Available Services:
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {[
-                            atm.service_1,
-                            atm.service_2,
-                            atm.service_3,
-                            atm.service_4,
-                            atm.service_5,
-                          ]
-                            .filter(
-                              (service) => service && service.trim() !== ""
-                            )
-                            .map((service, idx) => (
-                              <span
-                                key={idx}
-                                className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                              >
-                                {service?.trim()}
-                              </span>
-                            ))}
+                return (
+                  <Marker key={atm.id} position={[atm.latitude, atm.longitude]}>
+                    <Popup>
+                      <div className="p-3 min-w-[280px]">
+                        <h3 className="font-bold text-lg">{atm.atm}</h3>
+
+                        <div className="flex items-baseline space-x-2">
+                          <span
+                            style={{ textDecoration: "none" }}
+                            className="text-lg"
+                          >
+                            🛵
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {atm.address_extracted}
+                          </span>
+                        </div>
+
+                        {services.length > 0 && (
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium">Dịch vụ:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {services.map((service, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                                >
+                                  {service?.trim()}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-baseline">
+                          <span
+                            style={{ textDecoration: "none" }}
+                            className="text-lg"
+                          >
+                            🚦
+                          </span>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              window.open(
+                                `https://www.google.com/maps/dir/?api=1&destination=${atm.latitude},${atm.longitude}`,
+                                "_blank",
+                                "width=800,height=600"
+                              );
+                            }}
+                          >
+                            <span>Dẫn đường</span>
+                          </Button>
                         </div>
                       </div>
-
-                      <div className="mt-3 pt-2 border-t border-gray-200">
-                        <p className="text-xs text-gray-400">
-                          Coordinates: {atm.latitude.toFixed(6)},{" "}
-                          {atm.longitude.toFixed(6)}
-                        </p>
-                      </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
+                    </Popup>
+                  </Marker>
+                );
+              })}
             </>
           </LayersControl.Overlay>
 

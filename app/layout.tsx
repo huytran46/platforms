@@ -9,7 +9,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "IT2030.CH190",
+  title: "IT2030.CH190 - ACB ATM locations in data",
   description: "ACB's ATM in Hồ Chí Minh city",
 };
 

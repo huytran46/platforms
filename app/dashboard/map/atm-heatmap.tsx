@@ -112,7 +112,7 @@ export function ATMHeatmap({
   ];
 
   return (
-    <div style={{ height }} className="rounded-lg overflow-hidden border">
+    <div style={{ height }} className="rounded-sm overflow-hidden border">
       <MapContainer
         center={center}
         zoom={11}

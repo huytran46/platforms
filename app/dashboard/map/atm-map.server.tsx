@@ -3,7 +3,7 @@ import { ATMMap } from "./atm-map";
 
 const AtmMapServer = async () => {
   const { data: atmsWithCoords } = await getAtmsWithCoordinates();
-  return  <ATMMap atms={atmsWithCoords} showHeatmap={true} height="600px" />;
+  return <ATMMap height="100%" atms={atmsWithCoords} showHeatmap />;
 };
 
 export { AtmMapServer };
