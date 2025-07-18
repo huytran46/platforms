@@ -1,9 +1,8 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteMain } from "@/components/site-main";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
-import { AtmHeatmapServer } from "./atm-heatmap.server";
+import { AtmMapServer } from "./atm-map.server";
 
 export default async function MapPage() {
   return (
@@ -11,22 +10,11 @@ export default async function MapPage() {
       <SiteHeader>
         <h1 className="text-base font-medium">Bản đồ ATM</h1>
       </SiteHeader>
-      <SiteMain>
-        <div className="px-6 space-y-6 flex-1">
-          <div className="space-y-4 h-full flex flex-col">
-            <h2 className="text-lg font-medium">Heatmap</h2>
-            <div className="flex-1">
-              <Suspense
-                fallback={
-                  <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
-                    <span>Loading heatmap...</span>
-                  </Skeleton>
-                }
-              >
-                <AtmHeatmapServer />
-              </Suspense>
-            </div>
-          </div>
+      <SiteMain className="py-0">
+        <div className="flex-1">
+          <Suspense>
+            <AtmMapServer />
+          </Suspense>
         </div>
       </SiteMain>
     </SidebarInset>

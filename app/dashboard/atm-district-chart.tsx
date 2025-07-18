@@ -62,7 +62,7 @@ export function ATMDistrictChart({ data }: ATMDistrictChartProps) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                formatter={(value, name) => [value, "ATMs"]}
+                formatter={(value, name) => [value, " ", "ATMs"]}
                 labelFormatter={(label) => `District: ${label}`}
               />
             }

@@ -1,19 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  LayersControl,
-} from "react-leaflet";
-import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
+import { Button } from "@/components/ui/button";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { MapPin, Milestone, MilestoneIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  LayersControl,
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+} from "react-leaflet";
+import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -48,7 +46,11 @@ interface ATMMapProps {
   height?: string;
 }
 
-export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapProps) {
+export function ATMMap({
+  atms,
+  showHeatmap = false,
+  height = "100%",
+}: ATMMapProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -85,18 +87,18 @@ export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapPro
     intensity: 1, // Could be based on number of services
   }));
 
-  const countServices = (atm: ATMWithCoordinates) => {
-    return [
-      atm.service_1,
-      atm.service_2,
-      atm.service_3,
-      atm.service_4,
-      atm.service_5,
-    ].filter((service) => service && service.trim() !== "").length;
-  };
+  // const countServices = (atm: ATMWithCoordinates) => {
+  //   return [
+  //     atm.service_1,
+  //     atm.service_2,
+  //     atm.service_3,
+  //     atm.service_4,
+  //     atm.service_5,
+  //   ].filter((service) => service && service.trim() !== "").length;
+  // };
 
   return (
-    <div style={{ height }} className="rounded-lg overflow-hidden border">
+    <div style={{ height }} className="overflow-hidden border">
       <MapContainer
         center={center}
         zoom={11}
@@ -135,16 +137,16 @@ export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapPro
                 return (
                   <Marker key={atm.id} position={[atm.latitude, atm.longitude]}>
                     <Popup>
-                      <div className="p-3 min-w-[280px]">
-                        <h3 className="font-bold text-lg">{atm.atm}</h3>
+                      <div className="flex flex-col">
+                        <h3 className="font-bold text-lg mb-2">{atm.atm}</h3>
 
                         <div className="flex items-baseline space-x-2">
-                          <span
+                          {/* <span
                             style={{ textDecoration: "none" }}
                             className="text-lg"
                           >
                             🛵
-                          </span>
+                          </span> */}
                           <span className="text-sm text-gray-500">
                             {atm.address_extracted}
                           </span>
@@ -166,17 +168,11 @@ export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapPro
                           </div>
                         )}
 
-                        <div className="flex items-baseline">
-                          <span
-                            style={{ textDecoration: "none" }}
-                            className="text-lg"
-                          >
-                            🚦
-                          </span>
+                        <div className="flex items-baseline mt-5">
                           <Button
-                            variant="link"
+                            variant="ghost"
                             size="sm"
-                            className="cursor-pointer"
+                            className="cursor-pointer w-full"
                             onClick={() => {
                               window.open(
                                 `https://www.google.com/maps/dir/?api=1&destination=${atm.latitude},${atm.longitude}`,
@@ -185,6 +181,12 @@ export function ATMMap({ atms, showHeatmap = false, height = "100%" }: ATMMapPro
                               );
                             }}
                           >
+                            <span
+                              style={{ textDecoration: "none" }}
+                              className="text-lg"
+                            >
+                              🛵
+                            </span>
                             <span>Dẫn đường</span>
                           </Button>
                         </div>

@@ -16,10 +16,14 @@ export default async function DashboardPage() {
 
       <SiteMain>
         <SectionCards />
+
         <div className="px-4 lg:px-6 flex-1">
           <Suspense fallback={<Skeleton className="min-h-[650px] w-full" />}>
             <AtmDistrictChartServer />
           </Suspense>
+        </div>
+
+        <div className="px-4 lg:px-6 flex-1 min-h-[600px]">
           <Suspense
             fallback={
               <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
@@ -30,18 +34,6 @@ export default async function DashboardPage() {
             <AtmHeatmapServer />
           </Suspense>
         </div>
-
-        {/* <div className="px-4 lg:px-6 flex-1">
-          <Suspense
-            fallback={
-              <Skeleton className="min-h-[600px] w-full flex items-center justify-center">
-                <span>Loading heatmap...</span>
-              </Skeleton>
-            }
-          >
-            <AtmHeatmapServer />
-          </Suspense>
-        </div> */}
       </SiteMain>
     </SidebarInset>
   );
