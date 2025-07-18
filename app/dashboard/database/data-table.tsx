@@ -1,13 +1,9 @@
 "use client";
 
-import { useSortable } from "@dnd-kit/sortable";
 import {
   IconChevronLeft,
   IconChevronRight,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconDotsVertical,
-  IconGripVertical,
+  IconDotsVertical
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -24,9 +20,8 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import * as React from "react";
-import { z } from "zod";
 
-import { AtmData } from "@/app/dashboard/data";
+import { AtmData } from "@/app/dashboard/database/types";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -51,85 +46,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEditAtmDialog } from "./states";
 
-const editCoordinatesAtom = atom<string | null>(null);
-
-export const schema = z.object({
-  id: z.number(),
-  header: z.string(),
-  type: z.string(),
-  status: z.string(),
-  target: z.string(),
-  limit: z.string(),
-  reviewer: z.string(),
-});
-
-// Create a separate component for the drag handle
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners } = useSortable({
-    id,
-  });
-
+const ActionsDropdownMenu = ({ data }: { data: AtmData }) => {
+  const { setEditAtm } = useEditAtmDialog();
   return (
-    <Button
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-7 hover:bg-transparent"
-    >
-      <IconGripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  );
-}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+          size="icon"
+        >
+          <IconDotsVertical />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
 
-const EditCoordinatesItem = ({ id }: { id: string }) => {
-  const setEditCoordinatesAtom = useSetAtom(editCoordinatesAtom);
-  return (
-    <DropdownMenuItem
-      onClick={(e) => {
-        setEditCoordinatesAtom(id);
-        e.stopPropagation();
-      }}
-    >
-      Edit coordinates
-    </DropdownMenuItem>
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setEditAtm(data);
+          }}
+        >
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
 const columns: ColumnDef<AtmData>[] = [
   {
     id: "actions",
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-              size="icon"
-            >
-              <IconDotsVertical />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <EditCoordinatesItem id={row.original.id} />
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => <ActionsDropdownMenu data={row.original} />,
   },
   {
     id: "id",
@@ -201,22 +155,6 @@ function DraggableRow({ row }: { row: Row<AtmData> }) {
   );
 }
 
-const EditCoordinatesDialog = () => {
-  const [editCoordinates, setEditCoordinates] = useAtom(editCoordinatesAtom);
-  return (
-    <Dialog
-      open={!!editCoordinates}
-      onOpenChange={(nextState) => !nextState && setEditCoordinates(null)}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit coordinates</DialogTitle>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 export function DataTable({
   data,
   onPreviousPage,
@@ -227,8 +165,8 @@ export function DataTable({
   hasNextPage,
   hasPreviousPage,
   pageSize,
-  onFirstPage,
-  onLastPage,
+  // onFirstPage,
+  // onLastPage,
   stickyHeaderContent,
 }: {
   data: AtmData[];
@@ -241,8 +179,8 @@ export function DataTable({
   onPageSizeChange: (pageSize: number) => void;
   onPreviousPage: () => void;
   onNextPage: () => void;
-  onFirstPage: () => void;
-  onLastPage: () => void;
+  // onFirstPage: () => void;
+  // onLastPage: () => void;
 }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -308,21 +246,19 @@ export function DataTable({
         </div>
 
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
-          <Button
+          {/* <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => onFirstPage()}
           >
             <span className="sr-only">Go to first page</span>
             <IconChevronsLeft />
-          </Button>
+          </Button> */}
           <Button
             variant="outline"
             className="size-8"
             size="icon"
-            onClick={() => {
-              onPreviousPage();
-            }}
+            onClick={() => onPreviousPage()}
             disabled={!hasPreviousPage}
           >
             <span className="sr-only">Go to previous page</span>
@@ -340,7 +276,7 @@ export function DataTable({
             <span className="sr-only">Go to next page</span>
             <IconChevronRight />
           </Button>
-          <Button
+          {/* <Button
             variant="outline"
             className="hidden size-8 lg:flex"
             size="icon"
@@ -348,7 +284,7 @@ export function DataTable({
           >
             <span className="sr-only">Go to last page</span>
             <IconChevronsRight />
-          </Button>
+          </Button> */}
         </div>
       </div>
 

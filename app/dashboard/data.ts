@@ -3,34 +3,10 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { cache } from "react";
+import { AtmData } from "./database/types";
 
 const DATABASES = {
   ATM: "atm_refined",
-};
-
-export type AtmData = {
-  id: string;
-  atm: string;
-  district_extracted: string;
-  address_extracted: string;
-  image_src: string;
-  services: string;
-  service_1: string;
-  service_2: string;
-  service_3: string;
-  service_4: string;
-  service_5: string;
-  coordinates:
-    | null
-    | {
-        lat: number;
-        lng: number;
-      }
-    | [number, number]
-    | {
-        coordinates: [number, number];
-        type: "Point";
-      };
 };
 
 export type PaginatedAtmData = {
