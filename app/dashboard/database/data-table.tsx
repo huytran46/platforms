@@ -3,7 +3,7 @@
 import {
   IconChevronLeft,
   IconChevronRight,
-  IconDotsVertical
+  IconDotsVertical,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -46,10 +46,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEditAtmDialog } from "./states";
+import { useDeleteAtmDialog, useEditAtmDialog } from "./states";
 
 const ActionsDropdownMenu = ({ data }: { data: AtmData }) => {
   const { setEditAtm } = useEditAtmDialog();
+  const { setDeleteAtm } = useDeleteAtmDialog();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -66,15 +68,26 @@ const ActionsDropdownMenu = ({ data }: { data: AtmData }) => {
       <DropdownMenuContent align="end" className="w-32">
         <DropdownMenuItem
           onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setEditAtm(data);
+            React.startTransition(() => {
+              setEditAtm(data);
+            });
           }}
         >
           Edit
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            React.startTransition(() => {
+              setDeleteAtm(data);
+            });
+          }}
+        >
+          Delete
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

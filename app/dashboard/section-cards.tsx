@@ -26,6 +26,10 @@ const getAtmAnalytics = async (): Promise<AtmAnalytics> => {
   return data;
 };
 
+export function SectionCardsSkeleton() {
+  return;
+}
+
 export async function SectionCards() {
   const atmAnalytics = await getAtmAnalytics();
   

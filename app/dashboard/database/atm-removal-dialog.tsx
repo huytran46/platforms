@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
   Dialog,
   DialogContent,
@@ -20,20 +21,141 @@ import {
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { ReactNode } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ReactNode, useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import {
-  AtmFormData,
-  atmFormSchema,
-  CreateAtmPayload,
-  useCreateAtmData,
-  useUpdateAtmData,
-} from "./atm-api";
 import { AtmData } from "./types";
+import { useRemoveAtmData } from "./atm-api";
 
 const supabase = createClient();
+
+// Zod schema for ATM data create/edit
+const atmFormSchema = z.object({
+  id: z.string().optional(),
+  atm: z.string().min(1, "ATM name is required"),
+  district_extracted: z.string().min(1, "District is required"),
+  address_extracted: z.string().min(1, "Address is required"),
+  image_src: z.string().optional(),
+  services: z.string().optional(),
+  service_1: z.string().optional(),
+  service_2: z.string().optional(),
+  service_3: z.string().optional(),
+  service_4: z.string().optional(),
+  service_5: z.string().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
+});
+
+type AtmFormData = z.infer<typeof atmFormSchema>;
+
+type CreateAtmPayload = Partial<
+  Omit<AtmData, "id" | "coordinates"> & {
+    coordinates: {
+      lat: number;
+      lng: number;
+    } | null;
+  }
+>;
+
+const createAtmData = async (atmData: CreateAtmPayload) => {
+  // Extract coordinates if they exist
+  const latitude =
+    atmData.coordinates &&
+    typeof atmData.coordinates === "object" &&
+    "lat" in atmData.coordinates
+      ? atmData.coordinates.lat
+      : null;
+  const longitude =
+    atmData.coordinates &&
+    typeof atmData.coordinates === "object" &&
+    "lng" in atmData.coordinates
+      ? atmData.coordinates.lng
+      : null;
+
+  // Use the PostgreSQL RPC function instead of direct insert
+  const { data, error } = await supabase.rpc("create_atm", {
+    p_atm: atmData.atm,
+    p_district_extracted: atmData.district_extracted,
+    p_address_extracted: atmData.address_extracted,
+    p_image_src: atmData.image_src || null,
+    p_services: atmData.services || null,
+    p_service_1: atmData.service_1 || null,
+    p_service_2: atmData.service_2 || null,
+    p_service_3: atmData.service_3 || null,
+    p_service_4: atmData.service_4 || null,
+    p_service_5: atmData.service_5 || null,
+    p_latitude: latitude,
+    p_longitude: longitude,
+  });
+
+  if (error) {
+    console.error("Error creating ATM data:", error);
+    throw error;
+  }
+
+  return data;
+};
+
+const updateAtmData = async (atmData: AtmData) => {
+  // Extract coordinates if they exist
+  const latitude =
+    atmData.coordinates && atmData.coordinates.coordinates[1]
+      ? atmData.coordinates.coordinates[1]
+      : null;
+
+  const longitude =
+    atmData.coordinates && atmData.coordinates.coordinates[0]
+      ? atmData.coordinates.coordinates[0]
+      : null;
+
+  // Use the PostgreSQL RPC function instead of direct update
+  const { data, error } = await supabase.rpc("update_atm", {
+    p_id: atmData.id,
+    p_atm: atmData.atm,
+    p_district_extracted: atmData.district_extracted,
+    p_address_extracted: atmData.address_extracted,
+    p_image_src: atmData.image_src || null,
+    p_services: atmData.services || null,
+    p_service_1: atmData.service_1 || null,
+    p_service_2: atmData.service_2 || null,
+    p_service_3: atmData.service_3 || null,
+    p_service_4: atmData.service_4 || null,
+    p_service_5: atmData.service_5 || null,
+    p_latitude: latitude,
+    p_longitude: longitude,
+  });
+
+  if (error) {
+    console.error("Error updating ATM data:", error);
+    throw error;
+  }
+
+  return data;
+};
+
+const useCreateAtmData = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createAtmData,
+    onSuccess: () => {
+      // Invalidate the ATM data query to refetch
+      queryClient.invalidateQueries({ queryKey: ["atm-data"] });
+    },
+  });
+};
+
+const useUpdateAtmData = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateAtmData,
+    onSettled: () => {
+      // Invalidate the ATM data query to refetch
+      queryClient.invalidateQueries({ queryKey: ["atm-data"] });
+    },
+  });
+};
 
 const AtmDataForm = ({
   onSuccess,
@@ -301,15 +423,15 @@ const AtmDataForm = ({
   );
 };
 
-const AtmDataDialog = ({
+const AtmRemovalDialog = ({
+  atm: deleteAtm,
   children,
-  initialData,
   open: openProp,
   defaultOpen = false,
   onOpenChange,
 }: {
+  atm: AtmData;
   children?: ReactNode;
-  initialData?: AtmData;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -319,29 +441,43 @@ const AtmDataDialog = ({
     defaultProp: defaultOpen,
     onChange: onOpenChange,
   });
-  const isEditing = !!initialData;
+
+  const { mutate: removeAtm, isPending } = useRemoveAtmData();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit" : "Create"} ATM Data</DialogTitle>
+          <DialogTitle>Remove ATM</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Update the ATM record"
-              : "Add a new ATM record to the database"}
-            . Fields marked with * are required.
+            Are you sure you want to remove this "
+            <strong>{deleteAtm?.atm}</strong>"?
           </DialogDescription>
         </DialogHeader>
 
-        <AtmDataForm
-          initialData={initialData}
-          onSuccess={() => setOpen(false)}
-        />
+        <div className="flex justify-end gap-2 pt-4">
+          <Button
+            variant="outline"
+            disabled={isPending}
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={isPending}
+            onClick={() => {
+              removeAtm(deleteAtm.id);
+              setOpen(false);
+            }}
+          >
+            {isPending ? "Removing..." : "Remove"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-export { AtmDataDialog };
+export { AtmRemovalDialog };
