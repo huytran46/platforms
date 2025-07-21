@@ -63,8 +63,10 @@ const AtmDataTable = () => {
   const { searchKeyword, setSearchKeyword, debouncedSearchKeyword } =
     useSearchKeyword(onDebouncedSearchKeywordChange);
 
-  const { data, fetchNextPage, fetchPreviousPage, isFetching, isLoading } =
-    useAtmData(pagination.pageSize, debouncedSearchKeyword);
+  const { data, fetchNextPage, fetchPreviousPage, isFetching } = useAtmData(
+    pagination.pageSize,
+    debouncedSearchKeyword
+  );
 
   const currentPageIndex = pagination.pageIndex;
   const currentPageData =
