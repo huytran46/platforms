@@ -114,11 +114,7 @@ const MyLocationMarker = () => {
   return <Marker position={position} icon={userLocationIcon} />;
 };
 
-export const MyLocationLayer = () => (
-  <LayersControl.Overlay checked name="My location">
-    <MyLocationMarker />
-  </LayersControl.Overlay>
-);
+export const MyLocationLayer = () => <MyLocationMarker />;
 
 export const AtmsLayer = ({ atms }: { atms?: ATMWithCoordinates[] }) => {
   const props = useMemo(
