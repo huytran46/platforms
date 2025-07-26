@@ -31,6 +31,11 @@ const FloatingMenu = ({
             filterByLocation ? "bg-primary" : ""
           )}
           onClick={() => {
+            if (filterByLocation) {
+              onFilterByLocation(null);
+              return;
+            }
+
             if ("geolocation" in navigator) {
               navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -41,6 +46,10 @@ const FloatingMenu = ({
                 },
                 (err) => {
                   console.error("geolocation is not available", err);
+                  onFilterByLocation({
+                    latitude: 10.901722679234956,
+                    longitude: 106.69836371325988,
+                  });
                 },
                 {
                   enableHighAccuracy: true,

@@ -1,9 +1,10 @@
 "use client";
 
-import { PropsWithChildren, useState } from "react";
-import { ATMMap } from "./atm-map";
+import { PropsWithChildren } from "react";
+import { ATMMap, AtmsLayer } from "./atm-map";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { LayersControl } from "react-leaflet";
 
 // Type for ATM data returned from the RPC function
 type ATMWithCoordinates = {
@@ -25,10 +26,12 @@ type ATMWithCoordinates = {
 
 const supabase = createClient();
 
-const getAtms = async (filterByLocation?: {
-  latitude: number;
-  longitude: number;
-} | null): Promise<ATMWithCoordinates[]> => {
+const getAtms = async (
+  filterByLocation?: {
+    latitude: number;
+    longitude: number;
+  } | null
+): Promise<ATMWithCoordinates[]> => {
   const { data: response, error } = await supabase.rpc("get_nearby_atms", {
     nearby_location: filterByLocation,
   });
@@ -40,7 +43,10 @@ const getAtms = async (filterByLocation?: {
   return response?.data ?? [];
 };
 
-const AtmMapClient = ({ children, filterByLocation }: PropsWithChildren<{
+const AtmMapClient = ({
+  children,
+  filterByLocation,
+}: PropsWithChildren<{
   filterByLocation?: {
     latitude: number;
     longitude: number;
@@ -51,18 +57,13 @@ const AtmMapClient = ({ children, filterByLocation }: PropsWithChildren<{
     queryFn: () => getAtms(filterByLocation),
   });
 
-  if (isLoading) return null;
+  console.log("AtmMapClient", atms?.length);
 
-  const validATMs = (atms || []).filter(
-    (atm: ATMWithCoordinates) =>
-      atm.latitude &&
-      atm.longitude &&
-      !isNaN(atm.latitude) &&
-      !isNaN(atm.longitude)
-  );
+  if (isLoading || !atms) return null;
 
   return (
-    <ATMMap height="100%" atms={validATMs}>
+    <ATMMap height="100%">
+      <AtmsLayer atms={atms} />
       {children}
     </ATMMap>
   );
