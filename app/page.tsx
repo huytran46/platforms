@@ -40,7 +40,7 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col items-center relative">
       <div className="w-screen h-screen z-10">
         <AtmMapClient filterByLocation={filterByLocation}>
-          {/* <MyLocationLayer /> */}
+          <MyLocationLayer />
         </AtmMapClient>
       </div>
       <FloatingMenu
